@@ -35,6 +35,7 @@ func (cc *CephClient) callApi(endpoint string, method string) (string, error) {
 	client.RetryWaitMax = 2 * time.Minute
 	client.RetryMax = 5
 	client.HTTPClient.Timeout = 30 * time.Second
+	client.Logger = &CustomLogger{}
 
 	req, err := retryablehttp.NewRequest(method, endpoint, nil)
 	if err != nil {
