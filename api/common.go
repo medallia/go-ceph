@@ -35,7 +35,6 @@ func (cc *CephClient) callApi(endpoint string, method string) (string, error) {
 	var body string
 	endpoint = cc.BaseUrl + endpoint
 
-<<<<<<< HEAD
 	// Backoff configuration: 7 retries from 5 second to 1 minute
 	// 1º Retry: 5 seconds
 	// 2º Retry: 10 seconds
