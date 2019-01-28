@@ -42,6 +42,7 @@ func (cc *CephClient) callApi(endpoint string, method string) (string, error) {
 	// 4º Retry: 40 seconds
 	// 5º Retry: 1 minute
 	// 6º Retry: 1 minute
+    client := retryablehttp.NewClient()
 	client.RetryWaitMin = 5 * time.Second
 	client.RetryWaitMax = 1 * time.Minute
 	client.RetryMax = 7
