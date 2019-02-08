@@ -1,15 +1,22 @@
-# go-ceph - Go bindings for Ceph APIs (RBD, RADOS, CephFS)
+# go-ceph - Go bindings for Ceph APIs
 
-[![Build Status](https://travis-ci.org/noahdesu/go-ceph.svg)](https://travis-ci.org/noahdesu/go-ceph) [![Godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/ceph/go-ceph) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/ceph/go-ceph/master/LICENSE)
-
-
-This project uses Semantic Versioning (http://semver.org/).
+[![Build Status](https://travis-ci.org/ceph/go-ceph.svg)](https://travis-ci.org/ceph/go-ceph) [![Godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/ceph/go-ceph) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/ceph/go-ceph/master/LICENSE)
 
 ## Installation
 
     go get github.com/ceph/go-ceph
 
 The native RADOS library and development headers are expected to be installed.
+
+On debian systems (apt):
+```sh
+libcephfs-dev librbd-dev librados-dev
+```
+
+On rpm based systems (dnf, yum, etc):
+```sh
+libcephfs-devel librbd-devel librados-devel
+```
 
 ## Documentation
 
@@ -54,14 +61,14 @@ similar to a standard file I/O interface:
 ioctx, err := conn.OpenIOContext("mypool")
 
 // write some data
-bytes_in := []byte("input data")
-err = ioctx.Write("obj", bytes_in, 0)
+bytesIn := []byte("input data")
+err = ioctx.Write("obj", bytesIn, 0)
 
 // read the data back out
-bytes_out := make([]byte, len(bytes_in))
-n_out, err := ioctx.Read("obj", bytes_out, 0)
+bytesOut := make([]byte, len(bytesIn))
+_, err := ioctx.Read("obj", bytesOut, 0)
 
-if bytes_in != bytes_out {
+if !bytes.Equal(bytesIn, bytesOut) {
     fmt.Println("Output is not input!")
 }
 ```
@@ -92,6 +99,25 @@ delete a pool with the given name. The following will delete the pool named
 conn.DeletePool("new_pool")
 ```
 
+# Development
+
+```
+docker run --rm -it --net=host \
+  --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined \
+  -v ${PWD}:/go/src/github.com/ceph/go-ceph:z \
+  -v /home/nwatkins/src/ceph/build:/home/nwatkins/src/ceph/build:z \
+  -e CEPH_CONF=/home/nwatkins/src/ceph/build/ceph.conf \
+  ceph-golang
+```
+
+Run against a `vstart.sh` cluster without installing Ceph:
+
+```
+export CGO_CPPFLAGS="-I/ceph/src/include"
+export CGO_LDFLAGS="-L/ceph/build/lib"
+go build
+```
+
 ## Contributing
 
 Contributions are welcome & greatly appreciated, every little bit helps. Make code changes via Github pull requests:
@@ -107,4 +133,3 @@ Contributions are welcome & greatly appreciated, every little bit helps. Make co
 ```
 make test-docker
 ```
-
